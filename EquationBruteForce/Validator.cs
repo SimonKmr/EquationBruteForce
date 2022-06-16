@@ -1,5 +1,6 @@
 ﻿using EquationBruteForce.Operations;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EquationBruteForce
 {
-    internal class Validator
+    internal class Validator : ICollection<TestCase>
     {
         Generator generator;
         Variable[] variables;
@@ -18,10 +19,17 @@ namespace EquationBruteForce
             this.variables = variables;
         }
 
-        public void Add(TestCase testCase)
-        {
-            Tests.Add(testCase);
-        }
+        //ICollection
+        public int Count => Tests.Count;
+        public bool IsReadOnly => throw new NotImplementedException();
+        public void Add(TestCase testCase) => Tests.Add(testCase);
+        public void Clear() => Tests.Clear();
+        public bool Contains(TestCase item) => Tests.Contains(item);
+        public void CopyTo(TestCase[] array, int arrayIndex) => Tests.CopyTo(array, arrayIndex);
+        public IEnumerator<TestCase> GetEnumerator() => Tests.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public bool Remove(TestCase item) => Tests.Remove(item);
+
 
         public bool Validate()
         {
@@ -32,5 +40,8 @@ namespace EquationBruteForce
             }
             return true;
         }
+
+        
+
     }
 }
