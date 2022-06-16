@@ -1,34 +1,42 @@
 ﻿using EquationBruteForce;
 using EquationBruteForce.Operations;
 
-List<IOperation> Register = new List<IOperation>();
+List<Variable> variables = new List<Variable>();
+var v1 = new Variable("x");
+var v2 = new Variable("n");
 
-var v1 = new Variable("x") { Value = 568 };
-var v2 = new Variable("n") { Value = 57800 };
+variables.Add(v1);
+variables.Add(v2);
 
+
+List<Constant> constants = new List<Constant>();
 var c1 = new Constant(1);
 var c2 = new Constant(2);
 
-Register.Add(v1);
-Register.Add(v2);
-Register.Add(c1);
-Register.Add(c2);
+constants.Add(c1);
+constants.Add(c2);
 
-int target = 65223144;
-Generator generator = new Generator(Register.ToArray());
-var iterationOrder = Generator.IterationOrder;
-int i = 0;
-while (true)
+
+
+Generator generator = new Generator(variables.ToArray(),constants.ToArray());
+Validator validator = new Validator(variables.ToArray(), generator);
+
+validator.Add(new TestCase(new int[] { 1, 3 }, 0));
+validator.Add(new TestCase(new int[] { 2, 2 }, 2));
+validator.Add(new TestCase(new int[] { 12, 12 }, 132));
+validator.Add(new TestCase(new int[] { 568, 57800 }, 65223144));
+
+
+for (int i = 0; true; i++)
 {
-    for(int j = 0; j < iterationOrder.Count; j++)
-        iterationOrder[j].Iteration = i / (int)Math.Pow(generator.IterationLength, j);
-    var res = generator.Run();
-    var genStr = generator.ToString();
-        
-    if (res == target)
+    for(int j = 0; j < Generator.IterationOrder.Count; j++)
+        Generator.IterationOrder[j].Iteration = i / (int)Math.Pow(generator.IterationLength, j);
+
+    if (validator.Validate())
     {
+        var res = generator.Run();
+        var genStr = generator.ToString();
         Console.WriteLine($"{genStr} = {res}");
-        break;
     }
     i++;
 }

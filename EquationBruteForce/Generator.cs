@@ -10,21 +10,23 @@ namespace EquationBruteForce
     internal class Generator
     {
         public static List<Generator> IterationOrder = new List<Generator>();
-        public int IterationLength { get => 4 + operations.Length; }
+        public int IterationLength { get => 4 + variables.Length + constants.Length; }
 
         private int iteration = 0;
         public int Iteration { get => iteration; set => iteration = value; }
         public int State { get => iteration % IterationLength; }
         
         
-        private IOperation[] operations;
+        private Variable[] variables;
+        private Constant[] constants;
         
         Generator left;
         Generator right;
 
-        public Generator(IOperation[] operations)
+        public Generator(Variable[] variables, Constant[] constants)
         {
-            this.operations = operations;
+            this.variables = variables;
+            this.constants = constants;
             IterationOrder.Add(this);
         }
 
@@ -35,16 +37,19 @@ namespace EquationBruteForce
 
         public int Run()
         {
-            if (State < operations.Length) return operations[State].Execute();
+            int vl = variables.Length;
+            int cl = constants.Length;
+            if (State < vl) return variables[State].Execute();
+            else if (State - vl < cl) return constants[State - variables.Length].Execute();
             else
             {
-                if (left == null) left = new Generator(operations);
-                if (right == null) right = new Generator(operations);
+                if (left == null) left = new Generator(variables, constants);
+                if (right == null) right = new Generator(variables, constants);
 
-                if (State - operations.Length == 0) return left.Run() + right.Run();
-                else if (State - operations.Length == 1) return left.Run() - right.Run();
-                else if (State - operations.Length == 2) return left.Run() * right.Run();
-                else if (State - operations.Length == 3)
+                if (State - vl - cl == 0) return left.Run() + right.Run();
+                else if (State - vl - cl == 1) return left.Run() - right.Run();
+                else if (State - vl - cl == 2) return left.Run() * right.Run();
+                else if (State - vl - cl == 3)
                 {
                     var r = right.Run();
                     if (r == 0) return 0;
@@ -57,16 +62,20 @@ namespace EquationBruteForce
 
         public override string ToString()
         {
-            if (State < operations.Length) return operations[State].ToString();
+            int vl = variables.Length;
+            int cl = constants.Length;
+
+            if (State < vl) return variables[State].ToString();
+            else if (State - vl < constants.Length) return constants[State - variables.Length].ToString();
             else
             {
-                if (left == null) left = new Generator(operations);
-                if (right == null) right = new Generator(operations);
+                if (left == null) left = new Generator(variables, constants);
+                if (right == null) right = new Generator(variables, constants);
 
-                if (State - operations.Length == 0) return $"({left} + {right})";
-                if (State - operations.Length == 1) return $"({left} - {right})";
-                if (State - operations.Length == 2) return $"{left} * {right}";
-                if (State - operations.Length == 3) return $"{left} / {right}";
+                if (State - vl - cl == 0) return $"({left} + {right})";
+                if (State - vl - cl == 1) return $"({left} - {right})";
+                if (State - vl - cl == 2) return $"{left} * {right}";
+                if (State - vl - cl == 3) return $"{left} / {right}";
             }
             throw new Exception();
         }
