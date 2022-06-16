@@ -36,6 +36,5 @@ for (int i = 0; true; i++)
         var genStr = generator.ToString();
         Console.WriteLine($"f(?) = {genStr}");
     }
-    i++;
 }
 
