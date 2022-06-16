@@ -16,8 +16,6 @@ var c2 = new Constant(2);
 constants.Add(c1);
 constants.Add(c2);
 
-
-
 Generator generator = new Generator(variables.ToArray(),constants.ToArray());
 Validator validator = new Validator(variables.ToArray(), generator);
 
@@ -36,7 +34,7 @@ for (int i = 0; true; i++)
     {
         var res = generator.Run();
         var genStr = generator.ToString();
-        Console.WriteLine($"{genStr} = {res}");
+        Console.WriteLine($"f(?) = {genStr}");
     }
     i++;
 }
